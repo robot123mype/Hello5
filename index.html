@@ -1,35 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>IP Information API</title>
-</head>
-<body>
-    <div id="info">Getting information...</div>
-
-    <script>
-        // Получаем информацию об IP
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(ipData => {
-                // Получаем полную информацию об этом IP
-                return fetch(`https://ipapi.co/${ipData.ip}/json/`);
-            })
-            .then(response => response.json())
-            .then(fullInfo => {
-                // Отображаем информацию на странице
-                document.getElementById('info').innerHTML = JSON.stringify(fullInfo, null, 2);
-                
-                // Также делаем данные доступными глобально для API
-                window.ipData = fullInfo;
-            })
-            .catch(error => {
-                document.getElementById('info').textContent = 'Error: ' + error;
-            });
-            
-        // Функция для получения данных через JavaScript
-        function getIPInfo() {
-            return window.ipData || { error: "Data not loaded yet" };
-        }
-    </script>
-</body>
-</html>
+<script>
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(ipData => fetch(`https://ipapi.co/${ipData.ip}/json/`))
+  .then(r => r.json())
+  .then(data => {
+    document.documentElement.innerHTML = 
+`<pre>IP: ${data.ip}
+Country: ${data.country_name}
+City: ${data.city} 
+Region: ${data.region}
+ISP: ${data.org}
+Coordinates: ${data.latitude}, ${data.longitude}
+Timezone: ${data.timezone}
+Currency: ${data.currency}
+Languages: ${data.languages}
+Postal Code: ${data.postal}</pre>`;
+  });
+</script>
