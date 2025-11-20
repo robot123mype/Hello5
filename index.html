@@ -1,32 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>IP Information</title>
+    <title>IP Information API</title>
 </head>
 <body>
     <div id="info">Getting information...</div>
 
     <script>
-        // Функция для отправки данных обратно
-        function sendDataBack(data) {
-            // Отправляем данные обратно на сервер, откуда пришел запрос
-            fetch(window.location.href, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Data sent back successfully');
-                }
-            })
-            .catch(error => {
-                console.error('Error sending data back:', error);
-            });
-        }
-
         // Получаем информацию об IP
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -36,30 +16,20 @@
             })
             .then(response => response.json())
             .then(fullInfo => {
-                // Форматируем информацию
-                let info = `
-                    IP: ${fullInfo.ip}<br>
-                    Country: ${fullInfo.country_name} (${fullInfo.country_code})<br>
-                    City: ${fullInfo.city}<br>
-                    Region: ${fullInfo.region}<br>
-                    ISP: ${fullInfo.org}<br>
-                    Timezone: ${fullInfo.timezone}<br>
-                    Currency: ${fullInfo.currency}<br>
-                    Languages: ${fullInfo.languages}<br>
-                    Postal Code: ${fullInfo.postal}<br>
-                    Latitude: ${fullInfo.latitude}<br>
-                    Longitude: ${fullInfo.longitude}
-                `;
+                // Отображаем информацию на странице
+                document.getElementById('info').innerHTML = JSON.stringify(fullInfo, null, 2);
                 
-                // Показываем информацию на странице
-                document.getElementById('info').innerHTML = info;
-                
-                // Отправляем данные обратно
-                sendDataBack(fullInfo);
+                // Также делаем данные доступными глобально для API
+                window.ipData = fullInfo;
             })
             .catch(error => {
                 document.getElementById('info').textContent = 'Error: ' + error;
             });
+            
+        // Функция для получения данных через JavaScript
+        function getIPInfo() {
+            return window.ipData || { error: "Data not loaded yet" };
+        }
     </script>
 </body>
 </html>
